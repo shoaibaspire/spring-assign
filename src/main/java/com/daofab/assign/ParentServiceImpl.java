@@ -39,10 +39,15 @@ public class ParentServiceImpl implements ParentService {
         else {
             if(dir.equalsIgnoreCase("asc")) direction = Sort.Direction.ASC;
             else direction = Sort.Direction.DESC;
-            pageRequest = PageRequest.of(page, size, Sort.by(direction, sort));
+//            for(String eachOne: sort) {
+//            	eachOne
+//            }
+            pageRequest = PageRequest.of(page, size, direction, sort[0]);
         }
-        Page<ParentEntity> users = parentRepository.findAll(pageRequest);
-        if(! CollectionUtils.isEmpty(users.getContent())) return pagedResourcesAssembler.toModel(users, parentAssembler);
+        Page<ParentEntity> parentData = parentRepository.findAll(pageRequest);
+        if(! CollectionUtils.isEmpty(parentData.getContent())) {
+        	return pagedResourcesAssembler.toModel(parentData, parentAssembler);
+        }
         return null;	}
 
 }

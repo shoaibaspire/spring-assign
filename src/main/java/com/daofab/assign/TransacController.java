@@ -1,12 +1,14 @@
 package com.daofab.assign;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.daofab.assembler.ParentAssembler;
+import com.daofab.entity.ParentEntity;
 import com.daofab.exception.ResourceNotFoundException;
 import com.daofab.model.Parent;
 import com.daofab.repo.ParentRepository;
@@ -32,6 +36,8 @@ public class TransacController implements ErrorController {
 	@Autowired
 	private PagedResourcesAssembler pagedResourcesAssembler;
 
+	@Autowired
+	ParentAssembler parentAssembler;
 	@Autowired
 	private ParentService parentService;
 
@@ -78,14 +84,14 @@ public class TransacController implements ErrorController {
 		return new ResponseEntity<>(output, HttpStatus.OK);
 	}
 
-//	@GetMapping("/{id}")
-//	public ResponseEntity get(@PathVariable("id") Long id) {
-//
-//		Optional<ParentEntity> parentRecord = parentRepository.findById(id);
-//
-//		return parentRecord.isPresent() ? ResponseEntity.ok().contentType(MediaTypes.HAL_JSON)
-//				.body(parentAssembler.toModel(parentRecord.get())) : ResponseEntity.notFound().build();
-//	}
+	@GetMapping("/{id}")
+	public ResponseEntity get(@PathVariable("id") Long id) {
+
+		Optional<ParentEntity> parentRecord = parentRepository.findById(id);
+
+		return parentRecord.isPresent() ? ResponseEntity.ok().contentType(MediaTypes.HAL_JSON)
+				.body(parentAssembler.toModel(parentRecord.get())) : ResponseEntity.notFound().build();
+	}
 //
 //	@GetMapping
 //	public ResponseEntity get(@QuerydslPredicate(root = ParentEntity.class) Predicate predicate, Pageable pageable) {
