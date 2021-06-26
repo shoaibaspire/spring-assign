@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
 import com.daofab.entity.ChildEntity;
@@ -244,6 +245,7 @@ public class ParentChildProcessorService {
 			// sort by default by parent id
 			columnBy = "id";
 		}
+		
 
 		Page<ParentEntity> pEntList = parentRepository.findAll(PageRequest.of(pageNo, pageSize, Sort.by(columnBy)));
 

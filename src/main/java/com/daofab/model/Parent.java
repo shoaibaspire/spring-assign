@@ -1,10 +1,17 @@
 package com.daofab.model;
 
+import java.io.Serializable;
+
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Parent {
+public class Parent extends RepresentationModel<Parent>  implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3950859938873784264L;
 	Long id;
 	String sender;
 	String receiver;

@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @EnableJpaRepositories(basePackages ={"com.daofab.repo","com.daofab.entity"})
 @EnableTransactionManagement
-@ComponentScan(basePackages = {"com.daofab.assign","com.daofab.model","com.daofab.repo","com.daofab.entity"})
+@ComponentScan(basePackages = {"com.daofab.assembler","com.daofab.assign","com.daofab.model","com.daofab.repo","com.daofab.entity"})
 @EntityScan("com.daofab.entity")
 public class TransactionAssignApplication {
 
