@@ -28,6 +28,8 @@ public class ParentAssembler extends RepresentationModelAssemblerSupport<ParentE
 		parent.setSender(entity.getReceiver());
 		parent.setTotalAmount(entity.getTotalAmount());
 		parent.setTotalPaidAmount(entity.getTotalPaidAmount());
+		parent.add(linkTo(methodOn(TransacController.class).findChildRecords(entity.getId())).withSelfRel());
+
 		return parent;
 	}
 	

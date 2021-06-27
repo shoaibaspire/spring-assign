@@ -39,9 +39,7 @@ public class ParentServiceImpl implements ParentService {
         else {
             if(dir.equalsIgnoreCase("asc")) direction = Sort.Direction.ASC;
             else direction = Sort.Direction.DESC;
-//            for(String eachOne: sort) {
-//            	eachOne
-//            }
+//            //sorting by first parameter always
             pageRequest = PageRequest.of(page, size, direction, sort[0]);
         }
         Page<ParentEntity> parentData = parentRepository.findAll(pageRequest);

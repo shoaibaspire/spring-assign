@@ -2,21 +2,13 @@ package com.daofab.assign;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
 import com.daofab.entity.ChildEntity;
@@ -34,12 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class ParentChildProcessorService {
 
-//	@Autowired
-//	ParentMapper pMapper;
-//
-//	@Autowired
-//	ChildMapper cMapper;
-
 	@Autowired
 	ParentRepository parentRepository;
 
@@ -47,10 +33,6 @@ public class ParentChildProcessorService {
 	ChildRepository childRepo;
 
 	final ObjectMapper objectMapper = new ObjectMapper();
-
-	List<Parent> fetchAllParents() {
-		return null;
-	}
 
 	List<Parent> processInstallments() {
 		List<Parent> parentList = new ArrayList<>();
@@ -136,28 +118,6 @@ public class ParentChildProcessorService {
 			childRepo.saveAll(cEntityList);
 			System.out.println("End of childRepo::" + childRepo.findAll());
 
-			// process main logic now
-//			Map<Long, Integer> parentCumulativesum = new HashMap<>();
-//			for (ChildEntity eachOne : cEntityList) {
-//				if (parentCumulativesum.containsKey(eachOne.pId)) {
-//					int oldVal = parentCumulativesum.get(eachOne.pId);
-//					int newVal = eachOne.paidAmount + oldVal;
-//					parentCumulativesum.put(eachOne.pId, newVal);
-//
-//				} else {
-//					parentCumulativesum.put(eachOne.pId, eachOne.paidAmount);
-//				}
-//			}//cumulative sum end 
-//			
-//			pEntityList.stream().forEach(p -> {
-//				if(parentCumulativesum.containsKey(p.id)) {
-//					p.totalPaidAmount = parentCumulativesum.get(p.id);
-//					//p.setChildren(null);
-//				}
-//				parentRepository.save(p);
-//			});
-
-			// get latest persisted ones
 			pEntityList = parentRepository.findAll();
 		}
 		List<Parent> resultOutput = pEntityList.stream().map(eachValue -> parentEntityToDto(eachValue))
@@ -166,34 +126,6 @@ public class ParentChildProcessorService {
 		return resultOutput;
 	}
 
-	private void extracted(List<Child> childList, List<ChildEntity> cEntityList) {
-		for (Child eachChild : childList) {
-			ChildEntity each = DtotoChildEntity(eachChild);
-			System.out.println("each:::---->" + each);
-
-			if (each.getPId() != null) {
-				Optional<ParentEntity> currentParent = parentRepository.findById(each.getPId());
-
-				System.out.println("each.getPId():::---->" + each.getPId());
-
-				if (currentParent.isPresent()) {
-
-					ParentEntity currentValue = currentParent.get();
-					// currentValue.addChildren(each);
-
-					// each.addParent(currentValue);
-					System.out.println("currentParent:::---->" + currentParent);
-
-					parentRepository.save(currentValue);
-				}
-			}
-			cEntityList.add(each);
-		}
-
-		System.out.println("cEntityList list::::---->" + cEntityList);
-
-		cEntityList.stream().forEach(p -> childRepo.save(p));
-	}
 
 	ParentEntity DtotoParentEntity(Parent dto) {
 		if (dto == null)
@@ -229,51 +161,4 @@ public class ParentChildProcessorService {
 		return parentInfo;
 	}
 
-	public Page<Parent> findPaginated(int pageNo, int pageSize, String columnBy) {
-
-		boolean fieldExists = false;
-
-		for (Field field : ParentEntity.class.getFields()) {
-			if (field.getName().equals(columnBy)) {
-				// System.out.println(field.getName());
-				fieldExists = true;
-				break;
-			}
-		}
-
-		if (!fieldExists) {
-			// sort by default by parent id
-			columnBy = "id";
-		}
-		
-
-		Page<ParentEntity> pEntList = parentRepository.findAll(PageRequest.of(pageNo, pageSize, Sort.by(columnBy)));
-
-		System.out.println("pEntList::" + pEntList);
-		List<Parent> resultOutput = pEntList.stream().map(eachValue -> parentEntityToDto(eachValue))
-				.sorted(Comparator.comparing(Parent::getId)).collect(Collectors.toList());
-
-		System.out.println("resultOutput::" + resultOutput);
-
-		return new PageImpl<>(resultOutput);
-
-	}
-
-	public List<Parent> sortByFieldName(List<Parent> list, String fieldName) throws NoSuchFieldException {
-		Field field = Parent.class.getDeclaredField(fieldName);
-		if (!String.class.isAssignableFrom(field.getType())) {
-			throw new IllegalArgumentException("Field is not a string!");
-		}
-
-		field.setAccessible(true);
-		return list.stream().sorted((first, second) -> {
-			try {
-				String a = (String) field.get(first);
-				String b = (String) field.get(second);
-				return a.compareTo(b);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException("Error", e);
-			}
-		}).collect(Collectors.toList());
-	}
 }
